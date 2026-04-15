@@ -1,4 +1,4 @@
-# Astrobooking
+# Astrobooking-Demo
 A backend API for offering bookings for rocket launches.
 
 * Launches are scheduled for specific rockets, with pricing and minimum passenger thresholds.
