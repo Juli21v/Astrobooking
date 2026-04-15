@@ -7,3 +7,9 @@ A backend API for offering bookings for rocket launches.
 * A customer is identified by their emial address and has a name and phone number.
 * One costumer can book multiple seats on a lunch but cannot exceed the available seats.
 * Customers are billed upon booking, and payments are processed through a mock gateway.
+
+> [!WARNING]
+> AstroBooking is a fictional  space travel company.
+> The system is designed for demostration and training purposes.
+> Not for production use; no security or database is required at the initial stage.
+
