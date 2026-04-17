@@ -72,3 +72,12 @@ export function validateCreateRocketInput(input: unknown): ValidationError[] {
 
   return errors;
 }
+
+export function validateUpdateRocketInput(input: unknown): ValidationError[] {
+  if (typeof input !== 'object' || input === null) {
+    return [{ field: 'body', message: 'Request body must be a valid object' }];
+  }
+
+  const body = input as Record<string, unknown>;
+  return validateRocketInput(body);
+}

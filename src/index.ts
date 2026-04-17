@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { RocketsService, ValidationError, NotFoundError } from './rockets.service';
-import { validateCreateRocketInput } from './validation';
+import { validateCreateRocketInput, validateUpdateRocketInput } from './validation';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -59,8 +59,8 @@ app.get('/rockets/:id', (req: Request, res: Response) => {
 // Update a rocket
 app.put('/rockets/:id', (req: Request, res: Response) => {
   try {
-    const errors = validateCreateRocketInput(req.body);
-    if (errors.length > 0 && Object.keys(req.body).length > 0) {
+    const errors = validateUpdateRocketInput(req.body);
+    if (errors.length > 0) {
       return res.status(400).json({ errors });
     }
 
