@@ -1,92 +1,93 @@
 import express, { Request, Response } from 'express';
 import { RocketsService, ValidationError, NotFoundError } from './rockets.service';
 import { validateCreateRocketInput, validateUpdateRocketInput } from './validation';
+import { CreateRocketInput, UpdateRocketInput } from './types';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Health status endpoint
-app.get('/health', (req, res) => {
+const respond = {
+  badRequest: (res: Response, errors: Array<{ field: string; message: string }>) => res.status(400).json({ errors }),
+  notFound: (res: Response, message: string) => res.status(404).json({ error: message }),
+  internalServerError: (res: Response) => res.status(500).json({ error: 'Internal server error' }),
+};
+
+function handleServiceError(res: Response, error: unknown) {
+  if (error instanceof ValidationError) {
+    return respond.badRequest(res, error.errors);
+  }
+
+  if (error instanceof NotFoundError) {
+    return respond.notFound(res, error.message);
+  }
+
+  return respond.internalServerError(res);
+}
+
+app.get('/health', (_req, res) => {
   res.status(200).json({
     status: 'ok',
     timestamp: new Date().toISOString(),
   });
 });
 
-// Create a new rocket
-app.post('/rockets', (req: Request, res: Response) => {
-  try {
-    const errors = validateCreateRocketInput(req.body);
-    if (errors.length > 0) {
-      return res.status(400).json({ errors });
-    }
+app.post<{}, unknown, CreateRocketInput>('/rockets', (req: Request<{}, unknown, CreateRocketInput>, res) => {
+  const errors = validateCreateRocketInput(req.body);
+  if (errors.length > 0) {
+    return respond.badRequest(res, errors);
+  }
 
+  try {
     const rocket = RocketsService.createRocket(req.body);
-    res.status(201).json(rocket);
+    return res.status(201).json(rocket);
   } catch (error) {
-    if (error instanceof ValidationError) {
-      return res.status(400).json({ errors: error.errors });
-    }
-    res.status(500).json({ error: 'Internal server error' });
+    return handleServiceError(res, error);
   }
 });
 
-// Get all rockets
-app.get('/rockets', (req: Request, res: Response) => {
+app.get('/rockets', (_req, res) => {
   try {
     const rockets = RocketsService.getAllRockets();
-    res.status(200).json(rockets);
+    return res.status(200).json(rockets);
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    return handleServiceError(res, error);
   }
 });
 
-// Get a specific rocket by ID
-app.get('/rockets/:id', (req: Request, res: Response) => {
+app.get('/rockets/:id', (req: Request<{ id: string }>, res) => {
   try {
     const rocket = RocketsService.getRocketById(req.params.id);
     if (!rocket) {
-      return res.status(404).json({ error: `Rocket with id ${req.params.id} not found` });
+      return respond.notFound(res, `Rocket with id ${req.params.id} not found`);
     }
-    res.status(200).json(rocket);
+    return res.status(200).json(rocket);
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    return handleServiceError(res, error);
   }
 });
 
-// Update a rocket
-app.put('/rockets/:id', (req: Request, res: Response) => {
+app.put<{ id: string }, unknown, UpdateRocketInput>('/rockets/:id', (req: Request<{ id: string }, unknown, UpdateRocketInput>, res) => {
+  const errors = validateUpdateRocketInput(req.body);
+  if (errors.length > 0) {
+    return respond.badRequest(res, errors);
+  }
+
   try {
-    const errors = validateUpdateRocketInput(req.body);
-    if (errors.length > 0) {
-      return res.status(400).json({ errors });
-    }
-
     const rocket = RocketsService.updateRocket(req.params.id, req.body);
-    res.status(200).json(rocket);
+    return res.status(200).json(rocket);
   } catch (error) {
-    if (error instanceof ValidationError) {
-      return res.status(400).json({ errors: error.errors });
-    }
-    if (error instanceof NotFoundError) {
-      return res.status(404).json({ error: error.message });
-    }
-    res.status(500).json({ error: 'Internal server error' });
+    return handleServiceError(res, error);
   }
 });
 
-// Delete a rocket
-app.delete('/rockets/:id', (req: Request, res: Response) => {
+app.delete('/rockets/:id', (req: Request<{ id: string }>, res) => {
   try {
     RocketsService.deleteRocket(req.params.id);
-    res.status(204).send();
+    return res.status(204).send();
   } catch (error) {
-    if (error instanceof NotFoundError) {
-      return res.status(404).json({ error: error.message });
-    }
-    res.status(500).json({ error: 'Internal server error' });
+    return handleServiceError(res, error);
   }
 });
 
