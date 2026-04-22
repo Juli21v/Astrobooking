@@ -2,7 +2,18 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Rockets API E2E Tests', () => {
   const BASE_URL = 'http://localhost:3000';
-  let createdRocketId: string;
+  const VALID_RANGES = ['suborbital', 'orbital', 'moon', 'mars'];
+  const VALID_CAPACITIES = [1, 10];
+
+  // Helper function to create a rocket and return the created rocket data
+  async function createRocket(request: any, rocketData: { name: string; range: string; capacity: number }) {
+    const response = await request.post(`${BASE_URL}/rockets`, {
+      data: rocketData,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    expect(response.status()).toBe(201);
+    return await response.json();
+  }
 
   // Test 1: Create a valid rocket (201 response)
   test('should create a new rocket with valid data and return 201', async ({ request }) => {
@@ -26,8 +37,6 @@ test.describe('Rockets API E2E Tests', () => {
     expect(body).toHaveProperty('capacity', newRocket.capacity);
     expect(body).toHaveProperty('createdAt');
     expect(body).toHaveProperty('updatedAt');
-
-    createdRocketId = body.id;
   });
 
   // Test 2: Retrieve all rockets (200 response)
@@ -42,19 +51,13 @@ test.describe('Rockets API E2E Tests', () => {
 
   // Test 3: Retrieve a specific rocket by ID (200 response)
   test('should retrieve a specific rocket by ID and return 200', async ({ request }) => {
-    // First create a rocket
     const newRocket = {
       name: 'Falcon 9',
       range: 'orbital',
       capacity: 9,
     };
 
-    const createResponse = await request.post(`${BASE_URL}/rockets`, {
-      data: newRocket,
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    const createdRocket = await createResponse.json();
+    const createdRocket = await createRocket(request, newRocket);
     const rocketId = createdRocket.id;
 
     // Then retrieve it
@@ -71,19 +74,13 @@ test.describe('Rockets API E2E Tests', () => {
 
   // Test 4: Update a rocket with valid data (200 response)
   test('should update a rocket with valid data and return 200', async ({ request }) => {
-    // First create a rocket
     const newRocket = {
       name: 'Dragon',
       range: 'orbital',
       capacity: 7,
     };
 
-    const createResponse = await request.post(`${BASE_URL}/rockets`, {
-      data: newRocket,
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    const createdRocket = await createResponse.json();
+    const createdRocket = await createRocket(request, newRocket);
     const rocketId = createdRocket.id;
 
     // Update it
@@ -107,19 +104,13 @@ test.describe('Rockets API E2E Tests', () => {
 
   // Test 5: Delete a rocket (204 response)
   test('should delete a rocket and return 204', async ({ request }) => {
-    // First create a rocket
     const newRocket = {
       name: 'Rocket to Delete',
       range: 'suborbital',
       capacity: 5,
     };
 
-    const createResponse = await request.post(`${BASE_URL}/rockets`, {
-      data: newRocket,
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    const createdRocket = await createResponse.json();
+    const createdRocket = await createRocket(request, newRocket);
     const rocketId = createdRocket.id;
 
     // Delete it
@@ -217,9 +208,7 @@ test.describe('Rockets API E2E Tests', () => {
 
   // Test 10: Verify all rocket range values are accepted
   test('should accept all valid range values', async ({ request }) => {
-    const ranges = ['suborbital', 'orbital', 'moon', 'mars'];
-
-    for (const range of ranges) {
+    for (const range of VALID_RANGES) {
       const newRocket = {
         name: `Rocket ${range}`,
         range: range as any,
@@ -239,9 +228,7 @@ test.describe('Rockets API E2E Tests', () => {
 
   // Test 11: Verify capacity boundaries (1 and 10 are valid)
   test('should accept valid capacity boundaries (1 and 10)', async ({ request }) => {
-    const capacities = [1, 10];
-
-    for (const capacity of capacities) {
+    for (const capacity of VALID_CAPACITIES) {
       const newRocket = {
         name: `Rocket capacity ${capacity}`,
         range: 'orbital',
