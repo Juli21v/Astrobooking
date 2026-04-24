@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-04-23
+
+### Added
+- **Logging Functionality**: Comprehensive logging system for the API
+  - Request/response logging middleware for all endpoints
+  - Service operation logging (create, read, update, delete rockets)
+  - Validation error logging
+  - Timestamped log messages with levels: info, warn, error, debug
+  - Console-based logging implementation
+
 ## [1.1.0] - 2026-04-17
 
 ### Added
