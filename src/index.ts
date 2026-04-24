@@ -2,11 +2,20 @@ import express, { Request, Response } from 'express';
 import { RocketsService, ValidationError, NotFoundError } from './rockets.service';
 import { validateCreateRocketInput, validateUpdateRocketInput } from './validation';
 import { CreateRocketInput, UpdateRocketInput } from './types';
+import logger from './logger';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+
+app.use((req, res, next) => {
+  logger.info(`${req.method} ${req.path}`);
+  res.on('finish', () => {
+    logger.info(`${req.method} ${req.path} - ${res.statusCode}`);
+  });
+  next();
+});
 
 const respond = {
   badRequest: (res: Response, errors: Array<{ field: string; message: string }>) => res.status(400).json({ errors }),

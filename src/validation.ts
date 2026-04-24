@@ -1,4 +1,5 @@
 import { RocketRange, ValidationError, CreateRocketInput } from './types';
+import logger from './logger';
 
 const VALID_RANGES = ['suborbital', 'orbital', 'moon', 'mars'] as const satisfies readonly RocketRange[];
 const MIN_CAPACITY = 1;
@@ -75,7 +76,9 @@ export function validateRocketInput(input: Partial<CreateRocketInput>): Validati
 
 export function validateCreateRocketInput(input: unknown): ValidationError[] {
   if (typeof input !== 'object' || input === null) {
-    return [{ field: 'body', message: VALIDATION_MESSAGES.INVALID_BODY }];
+    const errors = [{ field: 'body', message: VALIDATION_MESSAGES.INVALID_BODY }];
+    logger.error(`Validation failed for create rocket: ${errors.map(e => e.message).join(', ')}`);
+    return errors;
   }
 
   const body = input as Record<string, unknown>;
@@ -89,13 +92,24 @@ export function validateCreateRocketInput(input: unknown): ValidationError[] {
     }
   }
 
+  if (errors.length > 0) {
+    logger.error(`Validation failed for create rocket: ${errors.map(e => e.message).join(', ')}`);
+  }
+
   return errors;
 }
 
 export function validateUpdateRocketInput(input: unknown): ValidationError[] {
   if (typeof input !== 'object' || input === null) {
-    return [{ field: 'body', message: VALIDATION_MESSAGES.INVALID_BODY }];
+    const errors = [{ field: 'body', message: VALIDATION_MESSAGES.INVALID_BODY }];
+    logger.error(`Validation failed for update rocket: ${errors.map(e => e.message).join(', ')}`);
+    return errors;
   }
 
-  return validateRocketInput(input as Partial<CreateRocketInput>);
+  const errors = validateRocketInput(input as Partial<CreateRocketInput>);
+  if (errors.length > 0) {
+    logger.error(`Validation failed for update rocket: ${errors.map(e => e.message).join(', ')}`);
+  }
+
+  return errors;
 }

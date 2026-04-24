@@ -1,5 +1,6 @@
 import { Rocket, CreateRocketInput, UpdateRocketInput } from './types';
 import { validateRocketInput } from './validation';
+import logger from './logger';
 
 // In-memory data store for rockets
 const rocketsStore: Map<string, Rocket> = new Map();
@@ -21,15 +22,24 @@ export class RocketsService {
     };
 
     rocketsStore.set(id, rocket);
+    logger.info(`Rocket created with ID: ${rocket.id}`);
     return rocket;
   }
 
   static getAllRockets(): Rocket[] {
-    return Array.from(rocketsStore.values());
+    const rockets = Array.from(rocketsStore.values());
+    logger.info(`Retrieved all rockets, count: ${rockets.length}`);
+    return rockets;
   }
 
   static getRocketById(id: string): Rocket | null {
-    return rocketsStore.get(id) || null;
+    const rocket = rocketsStore.get(id) || null;
+    if (rocket) {
+      logger.info(`Rocket retrieved: ${id}`);
+    } else {
+      logger.warn(`Rocket not found: ${id}`);
+    }
+    return rocket;
   }
 
   static updateRocket(id: string, updates: UpdateRocketInput): Rocket {
@@ -50,6 +60,7 @@ export class RocketsService {
     };
 
     rocketsStore.set(id, updated);
+    logger.info(`Rocket updated: ${id}`);
     return updated;
   }
 
@@ -58,6 +69,7 @@ export class RocketsService {
       throw new NotFoundError(`Rocket with id ${id} not found`);
     }
     rocketsStore.delete(id);
+    logger.info(`Rocket deleted: ${id}`);
   }
 
   private static generateId(): string {
