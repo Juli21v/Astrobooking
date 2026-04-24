@@ -9,6 +9,7 @@ A backend API for offering bookings for rocket launches.
   - Name: Non-empty string
   - Range: One of `suborbital`, `orbital`, `moon`, or `mars`
   - Capacity: Integer between 1-10 passengers
+- **Logging**: Request/response logging, service operations, and validation errors
 - **RESTful Endpoints**:
   - `POST /rockets` - Create a new rocket (returns 201)
   - `GET /rockets` - Retrieve all rockets (returns 200)
