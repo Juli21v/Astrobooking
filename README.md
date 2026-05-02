@@ -1,8 +1,14 @@
 # Astrobooking — API demo de reservas para lanzamientos
 
-API REST de demostración en **TypeScript** para gestionar cohetes y reservas de lanzamientos espaciales ficticios. Incluye validación de datos, registro de operaciones y **pruebas end-to-end con Playwright**.
+API REST de demostración en **TypeScript** para gestionar cohetes y reservas de lanzamientos espaciales ficticios. Incluye validación de datos, registro de operaciones y **pruebas end-to-end con Playwright** (el servidor se levanta solo al correr los tests). En GitHub Actions corre **`npm test`** en cada push.
 
 **Autora del repositorio:** [@Juli21v](https://github.com/Juli21v)
+
+## Por qué sirve como carta de presentación
+
+- Código tipado en **TypeScript** y capas claras (`validation`, `service`, rutas).
+- **Playwright** prueba la API de punta a punta sin UI.
+- **CI** visible en la pestaña *Actions* del repo.
 
 ## Stack
 

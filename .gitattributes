@@ -1,0 +1,3 @@
+# Ajusta el resaltado de lenguajes en GitHub: reportes Playwright no dominan el repo
+playwright-report/** linguist-generated
+test-results/** linguist-generated
