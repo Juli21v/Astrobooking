@@ -1,74 +1,72 @@
-# Astrobooking-Demo
-A backend API for offering bookings for rocket launches.
+# Astrobooking — API demo de reservas para lanzamientos
 
-## Features
+API REST de demostración en **TypeScript** para gestionar cohetes y reservas de lanzamientos espaciales ficticios. Incluye validación de datos, registro de operaciones y **pruebas end-to-end con Playwright**.
 
-### Rockets Management
-- **CRUD Operations**: Create, retrieve, update, and delete rocket records
-- **Validation**: Comprehensive input validation for rocket properties
-  - Name: Non-empty string
-  - Range: One of `suborbital`, `orbital`, `moon`, or `mars`
-  - Capacity: Integer between 1-10 passengers
-- **Logging**: Request/response logging, service operations, and validation errors
-- **RESTful Endpoints**:
-  - `POST /rockets` - Create a new rocket (returns 201)
-  - `GET /rockets` - Retrieve all rockets (returns 200)
-  - `GET /rockets/:id` - Retrieve a specific rocket (returns 200 or 404)
-  - `PUT /rockets/:id` - Update a rocket (returns 200 or 404)
-  - `DELETE /rockets/:id` - Delete a rocket (returns 204 or 404)
-- **Health Check**: `GET /health` - API status endpoint
+**Autora del repositorio:** [@Juli21v](https://github.com/Juli21v)
 
-### Booking System
-* Launches are scheduled for specific rockets, with pricing and minimum passenger thresholds.
-* Rockets have limited seats; launch requests are validated against rocket capacity.
-* Launch status lifecycle: scheduled -> confirmed -> successful, or cancellation/suspension paths.
-* A customer is identified by their email address and has a name and phone number.
-* One customer can book multiple seats on a launch but cannot exceed the available seats.
-* Customers are billed upon booking, and payments are processed through a mock gateway.
+## Stack
 
-## Testing
+- Node.js, TypeScript, Express
+- Playwright (tests E2E)
 
-Run the E2E test suite with:
+## Características principales
+
+### Cohetes (CRUD)
+
+- Crear, listar, obtener por id, actualizar y eliminar cohetes
+- Validación: nombre no vacío, rango (`suborbital`, `orbital`, `moon`, `mars`), capacidad 1–10 pasajeros
+- Endpoints REST bajo convenciones HTTP habituales
+- `GET /health` para comprobar que el servicio está vivo
+
+### Sistema de reservas (modelo de dominio)
+
+- Lanzamientos asociados a cohetes, precios y cupos
+- Estados del lanzamiento: programado → confirmado → exitoso (y caminos de cancelación)
+- Clientes identificados por email; límites de asientos por reserva
+- Pagos simulados mediante un gateway de prueba
+
+## Estructura del repositorio
+
+```
+Astrobooking/
+├── src/
+│   ├── index.ts           # Punto de entrada del servidor
+│   ├── rockets.service.ts # Lógica de cohetes
+│   ├── validation.ts      # Reglas de validación
+│   ├── types.ts           # Tipos TypeScript
+│   └── logger.ts          # Logging
+├── tests/                 # Pruebas Playwright
+├── package.json
+├── tsconfig.json
+└── playwright.config.ts
+```
+
+## Requisitos
+
+- Node.js 18+ (recomendado)
+
+## Instalación y uso
+
+```bash
+npm install
+npm run dev
+```
+
+Servidor por defecto: `http://localhost:3000`
+
+### Pruebas
+
 ```bash
 npm test
 ```
 
-This executes 13 comprehensive test cases covering:
-- All acceptance criteria for the Rockets API
-- Validation error handling
-- 404 error responses for non-existent resources
-- Idempotent behavior
-- Boundary condition validation
-
-### Health Status
-```bash
-curl http://localhost:3000/health
-```
-
-## Setup
-
-1. Install dependencies:
-```bash
-npm install
-```
-
-2. Start the development server:
-```bash
-npm run dev
-```
-
-The server will listen on `http://localhost:3000`
-
-## Build
+### Build producción
 
 ```bash
 npm run build
+npm start
 ```
 
-## Notes
+## Nota
 
-> [!WARNING]
-> AstroBooking is a fictional space travel company.
-> The system is designed for demonstration and training purposes.
-> Not for production use; no security or database is required at the initial stage.
-
+Proyecto con fines de **aprendizaje y demostración**, no pensado para producción (sin persistencia ni endurecimiento de seguridad en la primera versión).
