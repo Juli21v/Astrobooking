@@ -1,6 +1,6 @@
 # Astrobooking — API demo de reservas para lanzamientos
 
-API REST de demostración en **TypeScript** para gestionar cohetes y reservas de lanzamientos espaciales ficticios. Incluye validación de datos, registro de operaciones y **pruebas end-to-end con Playwright** (el servidor se levanta solo al correr los tests). En GitHub Actions corre **`npm test`** en cada push.
+API REST de demostración en **TypeScript** para gestionar cohetes y reservas de lanzamientos espaciales ficticios. Incluye validación de datos, registro de operaciones y **pruebas end-to-end con Playwright** (el servidor se levanta solo al correr los tests gracias a `webServer` en la config).
 
 **Autora del repositorio:** [@Juli21v](https://github.com/Juli21v)
 
@@ -8,7 +8,11 @@ API REST de demostración en **TypeScript** para gestionar cohetes y reservas de
 
 - Código tipado en **TypeScript** y capas claras (`validation`, `service`, rutas).
 - **Playwright** prueba la API de punta a punta sin UI.
-- **CI** visible en la pestaña *Actions* del repo.
+- Listo para conectar **GitHub Actions** en tu cuenta: hace falta un token/PAT con permiso `workflow` si subes el YAML desde la CLI (o créalo desde la web en *Actions*).
+
+### CI sugerida (opcional)
+
+En *Actions* → *New workflow* puedes usar un job estándar `ubuntu-latest` con `npm ci`, `npx playwright install --with-deps chromium` y `npm test`. Si `git push` rechaza archivos bajo `.github/workflows/`, ejecuta `gh auth refresh -s workflow` o usa un PAT con alcance **workflow**.
 
 ## Stack
 
@@ -34,7 +38,7 @@ API REST de demostración en **TypeScript** para gestionar cohetes y reservas de
 ## Estructura del repositorio
 
 ```
-Astrobooking/
+demo-viajes-espacio-api-y-tests/
 ├── src/
 │   ├── index.ts           # Punto de entrada del servidor
 │   ├── rockets.service.ts # Lógica de cohetes
